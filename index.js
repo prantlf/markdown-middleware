@@ -30,8 +30,6 @@ var age = Date.now() - stat.mtime
 // update css if old
 
 if (age > ms('5 days')) {
-	rmdir(__dirname + '/css')
-	fs.mkdirSync(__dirname + '/css')
 	get('https://github.com/aheckmann/greadme', function(e, body){
 		if (e) throw e
 		var r = /href=["']([^"']+\.css)/g
@@ -41,12 +39,14 @@ if (age > ms('5 days')) {
 		function add(url){
 			batch.push(function(done){ get(url, done) })
 		}
-		batch.on('progress', function(e){
-			var file = __dirname + '/css/' + e.index + '.css'
-			console.log('recieved %s', file)
-			fs.writeFileSync(file, e.value)
-		}).end(function(e){
+		batch.end(function(e, files){
 			if (e) throw e
+			rmdir(__dirname + '/css')
+			fs.mkdirSync(__dirname + '/css')
+			files.forEach(function(css, i){
+				var file = __dirname + '/css/' + i + '.css'
+				fs.writeFileSync(file, css)
+			})
 		})
 	})
 }
