@@ -1,0 +1,25 @@
+{
+  "name": "markdown-middleware",
+  "version": "0.1.0",
+  "description": "middleware for serving markdown files as rendered HTML",
+  "keywords": [
+    "markdown",
+    "connect",
+    "github",
+    "serve"
+  ],
+  "author": "Jake Rosoman<jkroso@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jkroso/markdown-middleware.git"
+  },
+  "dependencies": {
+    "rmdir": "http://github.com/jkroso/node.rmdir/tarball/1.2.1",
+    "ms": "0.6.1",
+    "ejs": "0.8.4",
+    "batch": "0.4.0"
+  },
+  "devDependencies": {
+    "connect": "2.8.4"
+  }
+}
