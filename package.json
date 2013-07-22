@@ -1,6 +1,6 @@
 {
   "name": "markdown-middleware",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "middleware for serving markdown files as rendered HTML",
   "keywords": [
     "markdown",
@@ -17,7 +17,9 @@
     "rmdir": "http://github.com/jkroso/node.rmdir/tarball/1.2.1",
     "ms": "0.6.1",
     "ejs": "0.8.4",
-    "batch": "0.4.0"
+    "batch": "0.4.0",
+    "pygmentize-bundled": "~1.1.0",
+    "marked": "~0.2.9"
   },
   "devDependencies": {
     "connect": "2.8.4"

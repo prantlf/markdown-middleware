@@ -1,28 +1,13 @@
 
-// var highlight = require('peacock').highlight
-// var compile = require('marked')
+var highlight = require('pygmentize-bundled')
 var rmdir = require('rmdir/sync')
+var compile = require('marked')
 var Batch = require('batch')
 var https = require('https')
 var path = require('path')
 var ejs = require('ejs')
 var fs = require('fs')
 var ms = require('ms')
-
-// TODO: render html locally
-// compile.setOptions({
-// 	gfm: true,
-// 	pedantic: false,
-// 	sanitize: false,
-// 	tables: true,
-// 	breaks: true,
-// 	highlight: function(code, lang){
-// 		if ('js' === lang) {
-// 			try { return highlight(code, { linenos: false }) }
-// 			catch (e) {}
-// 		}
-// 	}
-// })
 
 var stat = fs.statSync(__dirname + '/css')
 var age = Date.now() - stat.mtime
@@ -62,30 +47,34 @@ module.exports = function(opts){
 
 		file = path.join(dir, file)
 
-		fs.readFile(file, 'utf8', function(err, md){
-			if (err) return next(err)
-			https.request({
-				hostname: 'api.github.com',
-				path: '/markdown/raw',
-				method: 'POST',
-				headers: {
-					'content-type': 'text/plain',
-					'user-agent': 'connect-md'
-				}
-			}, function(gh){
-				buffer(gh, function(e, content){
-					var template = fs.readFileSync(__dirname + '/index.html', 'utf8')
-					var html = ejs.render(template, {
-						css: fs.readdirSync(cssDir).map(function(name){
-							return fs.readFileSync(cssDir + '/' + name, 'utf8')
-						}),
-						markdown: content,
-						title: req.url
+		fs.readFile(file, 'utf8', function(e, md){
+			if (e) return next(e)
+			var template = fs.readFileSync(__dirname + '/index.html', 'utf8')
+			compile(md, {
+				gfm: true,
+				pedantic: false,
+				tables: true,
+				breaks: true,
+				sanitize: false,
+				smartLists: true,
+				smartypants: false,
+				highlight: function(code, lang, done){
+					highlight({
+						lang: lang,
+						format: 'html'
+					}, code, function(e, result){
+						done(e, result.toString('utf8'))
 					})
-					res.end(html)
-				})
-			}).on('error', next)
-				.end(md)
+				}
+			}, function(e, html){
+				res.end(ejs.render(template, {
+					css: fs.readdirSync(cssDir).map(function(name){
+						return fs.readFileSync(cssDir + '/' + name, 'utf8')
+					}),
+					markdown: html,
+					title: path.relative(dir, file)
+				}))
+			})
 		})
 	}
 }

@@ -19,5 +19,16 @@
 				<%- markdown %>
 			</article>
 		</div>
+		<script>
+			// remove unnecessary containers
+			;(function(){
+				var slice = [].slice
+				var els = slice.call(document.querySelectorAll('.highlight'))
+				els.forEach(function(el){
+					var container = el.parentElement.parentElement
+					container.parentElement.replaceChild(el, container)
+				})
+			})();
+		</script>
 	</body>
 </html>
