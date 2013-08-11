@@ -1,7 +1,15 @@
 
 # markdown-middleware
 
-  middleware for serving markdown files as rendered HTML. It makes an effort to render a closely as possible to the style of github but stops short of actually using githubs API to keep performance snappy.
+  middleware
+  for
+  serving
+  markdown
+  files
+  as
+  rendered
+  HTML.
+  It makes an effort to render a closely as possible to the style of github but stops short of actually using githubs API to keep performance snappy.
 
 ## Installation
 

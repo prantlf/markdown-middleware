@@ -54,7 +54,7 @@ module.exports = function(opts){
 				gfm: true,
 				pedantic: false,
 				tables: true,
-				breaks: true,
+				breaks: false,
 				sanitize: false,
 				smartLists: true,
 				smartypants: false,
