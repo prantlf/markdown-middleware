@@ -59,12 +59,7 @@ module.exports = function(opts){
 				smartLists: true,
 				smartypants: false,
 				highlight: function(code, lang, done){
-					highlight({
-						lang: lang,
-						format: 'html'
-					}, code, function(e, result){
-						done(e, result.toString('utf8'))
-					})
+					highlight({lang: lang, format: 'html'}, code, done)
 				}
 			}, function(e, html){
 				res.end(ejs.render(template, {
