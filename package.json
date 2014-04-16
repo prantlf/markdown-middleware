@@ -1,20 +1,20 @@
 {
   "name": "markdown-middleware",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "middleware for serving markdown files as rendered HTML",
   "keywords": ["markdown", "connect", "github", "serve"],
   "author": "Jake Rosoman<jkroso@gmail.com>",
   "repository": "git://github.com/jkroso/markdown-middleware.git",
   "dependencies": {
     "pygmentize-bundled": "^2.1.0",
+    "parse-duration": "~0.1.0",
     "marked": "~0.3.2",
     "batch": "~0.5.0",
     "rm-r": "~1.0.2",
-    "ejs": "~1.0.0",
-    "ms": "~0.6.1"
+    "ejs": "~1.0.0"
   },
   "devDependencies": {
     "connect": "2.8.4"
   },
-  "files": ["index.html", "index.js", "css"]
+  "files": ["index.html", "index.js"]
 }

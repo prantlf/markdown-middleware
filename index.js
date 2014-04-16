@@ -1,5 +1,6 @@
 
 var highlight = require('pygmentize-bundled')
+var ms = require('parse-duration')
 var rmdir = require('rm-r/sync')
 var compile = require('marked')
 var Batch = require('batch')
@@ -7,10 +8,14 @@ var https = require('https')
 var path = require('path')
 var ejs = require('ejs')
 var fs = require('fs')
-var ms = require('ms')
 
-var stat = fs.statSync(__dirname + '/css')
-var age = Date.now() - stat.mtime
+if (fs.existsSync(__dirname + '/css')) {
+  var stat = fs.statSync(__dirname + '/css')
+  var age = Date.now() - stat.mtime
+} else {
+  fs.mkdirSync(__dirname + '/css')
+  var age = Infinity
+}
 
 // update css if old
 
@@ -38,7 +43,7 @@ if (age > ms('5 days')) {
 
 module.exports = function(opts){
   var dir = path.resolve(opts.directory)
-  var cssDir = __dirname + '/css'
+  var css = __dirname + '/css'
 
   return function(req, res, next) {
     var file = req.url
@@ -63,8 +68,8 @@ module.exports = function(opts){
         }
       }, function(e, html){
         res.end(ejs.render(template, {
-          css: fs.readdirSync(cssDir).map(function(name){
-            return fs.readFileSync(cssDir + '/' + name, 'utf8')
+          css: fs.readdirSync(css).map(function(name){
+            return fs.readFileSync(css + '/' + name, 'utf8')
           }),
           markdown: html,
           title: path.relative(dir, file)
@@ -74,17 +79,13 @@ module.exports = function(opts){
   }
 }
 
-function buffer(stream, cb){
-  var buf = ''
-  stream.on('readable', function(){
-    buf += this.read() || ''
-  }).on('end', function(){
-    cb(null, buf)
-  }).on('error', cb)
-}
-
 function get(url, cb){
   https.get(url, function(res){
-    buffer(res, cb)
+    var buf = ''
+    res.on('readable', function(){
+      buf += this.read() || ''
+    }).on('end', function(){
+      cb(null, buf)
+    }).on('error', cb)
   })
 }
