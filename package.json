@@ -6,11 +6,11 @@
   "author": "Jake Rosoman<jkroso@gmail.com>",
   "repository": "git://github.com/jkroso/markdown-middleware.git",
   "dependencies": {
-    "pygmentize-bundled": "~1.1.0",
-    "rmdir": "jkroso/node.rmdir",
-    "marked": "~0.2.9",
-    "batch": "~0.4.0",
-    "ejs": "~0.8.4",
+    "pygmentize-bundled": "^2.1.0",
+    "marked": "~0.3.2",
+    "batch": "~0.5.0",
+    "rm-r": "~1.0.2",
+    "ejs": "~1.0.0",
     "ms": "~0.6.1"
   },
   "devDependencies": {

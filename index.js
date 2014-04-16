@@ -1,6 +1,6 @@
 
 var highlight = require('pygmentize-bundled')
-var rmdir = require('rmdir/sync')
+var rmdir = require('rm-r/sync')
 var compile = require('marked')
 var Batch = require('batch')
 var https = require('https')
