@@ -1,9 +1,13 @@
 
+0.1.7 / 2014-05-13
+==================
+
+ * improve error handling
+
 0.1.6 / 2014-05-12
 ==================
 
- * fix loading initial css load
- * rm css
+ * fix initial css load
 
 0.1.5 / 2014-04-16
 ==================
