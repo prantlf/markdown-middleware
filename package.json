@@ -1,6 +1,6 @@
 {
   "name": "markdown-middleware",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "middleware for serving markdown files as rendered HTML",
   "keywords": ["markdown", "connect", "github", "serve"],
   "author": "Jake Rosoman<jkroso@gmail.com>",
