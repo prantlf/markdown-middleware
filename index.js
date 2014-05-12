@@ -67,13 +67,13 @@ module.exports = function(opts){
         }
       }, function(e, html){
         if (e) return next(e)
-        stylesheets.read(function(css){
+        stylesheets.then(function(css){
           res.end(ejs.render(template, {
             title: path.relative(dir, file),
             markdown: html,
             css: css
           }))
-        })
+        }).read(null, next)
       })
     }, next)
   }
