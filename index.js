@@ -1,59 +1,58 @@
 
 var highlight = require('pygmentize-bundled')
 var ms = require('parse-duration')
+var fs = require('lift-result/fs')
 var rmdir = require('rm-r/sync')
+var get = require('solicit').get
 var compile = require('marked')
-var Batch = require('batch')
-var https = require('https')
+var map = require('map/async')
 var path = require('path')
 var ejs = require('ejs')
-var fs = require('fs')
 
-if (fs.existsSync(__dirname + '/css')) {
-  var stat = fs.statSync(__dirname + '/css')
+var css = __dirname + '/css'
+
+if (fs.existsSync(css)) {
+  var stat = fs.statSync(css)
   var age = Date.now() - stat.mtime
 } else {
-  fs.mkdirSync(__dirname + '/css')
+  fs.mkdirSync(css)
   var age = Infinity
 }
 
 // update css if old
 
 if (age > ms('5 days')) {
-  get('https://github.com/aheckmann/greadme', function(e, body){
-    if (e) throw e
+  var urls = get('https://github.com/aheckmann/greadme').then(function(body){
     var r = /href=["']([^"']+\.css)/g
-    var batch = new Batch
+    var arr = []
     var m
-    while (m = r.exec(body)) add(m[1])
-    function add(url){
-      batch.push(function(done){ get(url, done) })
-    }
-    batch.end(function(e, files){
-      if (e) throw e
-      rmdir(__dirname + '/css')
-      fs.mkdirSync(__dirname + '/css')
-      files.forEach(function(css, i){
-        var file = __dirname + '/css/' + i + '.css'
-        fs.writeFileSync(file, css)
-      })
-    })
+    while (m = r.exec(body)) arr.push(m[1])
+    return arr
+  })
+  rmdir(css)
+  fs.mkdirSync(css)
+  var stylesheets = map(map(urls, get), function(css, i){
+    var name = css + '/' + i + '.css'
+    fs.writeFile(name, css)
+    return css
+  })
+} else {
+  var stylesheets = map(fs.readdir(css), function(name){
+    return fs.readFile(css + '/' + name, 'utf8')
   })
 }
 
 module.exports = function(opts){
   var dir = path.resolve(opts.directory)
-  var css = __dirname + '/css'
 
-  return function(req, res, next) {
+  return function(req, res, next){
     var file = req.url
 
     if (!(/\.m(?:d|arkdown)$/i).test(file)) return next()
 
     file = path.join(dir, file)
 
-    fs.readFile(file, 'utf8', function(e, md){
-      if (e) return next(e)
+    fs.readFile(file, 'utf8').read(function(md){
       var template = fs.readFileSync(__dirname + '/index.html', 'utf8')
       compile(md, {
         gfm: true,
@@ -67,25 +66,15 @@ module.exports = function(opts){
           highlight({lang: lang, format: 'html'}, code, done)
         }
       }, function(e, html){
-        res.end(ejs.render(template, {
-          css: fs.readdirSync(css).map(function(name){
-            return fs.readFileSync(css + '/' + name, 'utf8')
-          }),
-          markdown: html,
-          title: path.relative(dir, file)
-        }))
+        if (e) return next(e)
+        stylesheets.read(function(css){
+          res.end(ejs.render(template, {
+            title: path.relative(dir, file),
+            markdown: html,
+            css: css
+          }))
+        })
       })
-    })
+    }, next)
   }
-}
-
-function get(url, cb){
-  https.get(url, function(res){
-    var buf = ''
-    res.on('readable', function(){
-      buf += this.read() || ''
-    }).on('end', function(){
-      cb(null, buf)
-    }).on('error', cb)
-  })
 }

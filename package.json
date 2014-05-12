@@ -7,9 +7,12 @@
   "repository": "git://github.com/jkroso/markdown-middleware.git",
   "dependencies": {
     "pygmentize-bundled": "^2.1.0",
+    "map": "jkroso/map#0.2.11",
     "parse-duration": "~0.1.0",
+    "lift-result": "~0.1.5",
+    "solicit": "~0.0.7",
+    "result": "~1.0.2",
     "marked": "~0.3.2",
-    "batch": "~0.5.0",
     "rm-r": "~1.0.2",
     "ejs": "~1.0.0"
   },
