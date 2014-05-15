@@ -9,6 +9,8 @@ var map = require('map/async')
 var path = require('path')
 var ejs = require('ejs')
 
+var template = fs.readFileSync(__dirname + '/index.html', 'utf8')
+var template = ejs.compile(template)
 var css = __dirname + '/css'
 
 if (fs.existsSync(css)) {
@@ -52,7 +54,6 @@ module.exports = function(opts){
     file = path.join(dir, file)
 
     fs.readFile(file, 'utf8').read(function(md){
-      var template = fs.readFileSync(__dirname + '/index.html', 'utf8')
       compile(md, {
         gfm: true,
         pedantic: false,
@@ -67,7 +68,7 @@ module.exports = function(opts){
       }, function(e, html){
         if (e) return next(e)
         stylesheets.then(function(css){
-          res.end(ejs.render(template, {
+          res.end(template({
             title: path.relative(dir, file),
             markdown: html,
             css: css
