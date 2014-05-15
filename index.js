@@ -31,10 +31,9 @@ if (age > ms('5 days')) {
   })
   rmdir(css)
   fs.mkdirSync(css)
-  var stylesheets = map(map(urls, get), function(css, i){
+  var stylesheets = map(map(urls, get), function(src, i){
     var name = css + '/' + i + '.css'
-    fs.writeFile(name, css)
-    return css
+    return fs.writeFile(name, src).yield(src)
   })
 } else {
   var stylesheets = map(fs.readdir(css), function(name){
