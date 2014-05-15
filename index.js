@@ -1,10 +1,11 @@
 
 var highlight = require('pygmentize-bundled')
+var lift = require('lift-result/cps')
+var compile = lift(require('marked'))
 var ms = require('parse-duration')
 var fs = require('lift-result/fs')
 var rmdir = require('rm-r/sync')
 var get = require('solicit').get
-var compile = require('marked')
 var map = require('map/async')
 var path = require('path')
 var ejs = require('ejs')
@@ -53,28 +54,25 @@ module.exports = function(opts){
 
     file = path.join(dir, file)
 
-    fs.readFile(file, 'utf8').read(function(md){
-      compile(md, {
-        gfm: true,
-        pedantic: false,
-        tables: true,
-        breaks: false,
-        sanitize: false,
-        smartLists: true,
-        smartypants: false,
-        highlight: function(code, lang, done){
-          highlight({lang: lang, format: 'html'}, code, done)
-        }
-      }, function(e, html){
-        if (e) return next(e)
-        stylesheets.then(function(css){
-          res.end(template({
-            title: path.relative(dir, file),
-            markdown: html,
-            css: css
-          }))
-        }).read(null, next)
+    compile(fs.readFile(file, 'utf8'), {
+      gfm: true,
+      pedantic: false,
+      tables: true,
+      breaks: false,
+      sanitize: false,
+      smartLists: true,
+      smartypants: false,
+      highlight: function(code, lang, done){
+        highlight({lang: lang, format: 'html'}, code, done)
+      }
+    }).then(function(html){
+      return stylesheets.then(function(css){
+        res.end(template({
+          title: path.relative(dir, file),
+          markdown: html,
+          css: css
+        }))
       })
-    }, next)
+    }).read(null, next)
   }
 }
