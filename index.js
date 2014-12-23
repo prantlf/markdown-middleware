@@ -70,7 +70,9 @@ module.exports = function(opts){
         res.end(template({
           title: path.relative(dir, file),
           markdown: html,
-          css: css
+          css: css.map(function (promise) {
+            return promise.value
+          })
         }))
       })
     }).read(null, next)
