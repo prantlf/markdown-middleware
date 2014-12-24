@@ -70,7 +70,10 @@ module.exports = function(opts){
         res.end(template({
           title: path.relative(dir, file),
           markdown: html,
-          css: css
+          // Workaround if there are duplicated modules used
+          css: css.map(function (item) {
+            return item.value || item
+          })
         }))
       })
     }).read(null, next)
